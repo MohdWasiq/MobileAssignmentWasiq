@@ -22,10 +22,11 @@ class ApiService : NSObject {
             
             if let data = data {
                 let jsonDecoder = JSONDecoder()
-                let empData = try! jsonDecoder.decode([DeviceData].self, from: data)
-                if (empData.isEmpty) {
+                guard let empData = try? jsonDecoder.decode([DeviceData].self, from: data) else {
                     completion([])
+                    return
                 }
+                completion(empData)
             }
         }.resume()
     }

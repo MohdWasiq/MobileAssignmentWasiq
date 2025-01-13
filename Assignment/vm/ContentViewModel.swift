@@ -13,10 +13,16 @@ class ContentViewModel : ObservableObject {
     private let apiService = ApiService()
     @Published var navigateDetail: DeviceData? = nil
     @Published var data: [DeviceData]? = []
+    
+    init() {
+        fetchAPI()
+    }
 
     func fetchAPI() {
         apiService.fetchDeviceDetails(completion: { item in
-            self.data = item
+            DispatchQueue.main.async {
+                self.data = item
+            }
         })
     }
     
