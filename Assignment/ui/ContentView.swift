@@ -10,11 +10,11 @@ import SwiftUI
 struct ContentView: View {
     @ObservedObject private var viewModel = ContentViewModel()
     @State private var path: [DeviceData] = [] // Navigation path
-    
+    @State private var searchText: String = ""
     var body: some View {
         NavigationStack(path: $path) {
             Group {
-                if let computers = viewModel.data, !computers.isEmpty {
+                if let computers = searchResults, !computers.isEmpty {
                     DevicesList(devices: computers) { selectedComputer in
                         viewModel.navigateToDetail(navigateDetail: selectedComputer)
                     }
@@ -32,5 +32,24 @@ struct ContentView: View {
             }
             
         }
+        .searchable(text: $searchText) {
+            ForEach(searchResults ?? []) { result in
+                Text(result.name).searchCompletion(result)
+            }
+        }
+    }
+    var searchResults: [DeviceData]? {
+        
+        if searchText.isEmpty {
+            return viewModel.data
+            
+        } else {
+            return viewModel.data?.filter {
+                $0.name.contains(searchText)
+            }
+        }
     }
 }
+
+
+
