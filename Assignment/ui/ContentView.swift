@@ -18,7 +18,9 @@ struct ContentView: View {
                     DevicesList(devices: computers) { selectedComputer in
                         viewModel.navigateToDetail(navigateDetail: selectedComputer)
                     }
-                } else {
+                } else if !searchText.isEmpty && (searchResults?.isEmpty ?? false) {
+                    Text("No results found")
+                }  else {
                     ProgressView("Loading...")
                 }
             }
@@ -34,18 +36,17 @@ struct ContentView: View {
         }
         .searchable(text: $searchText) {
             ForEach(searchResults ?? []) { result in
-                Text(result.name).searchCompletion(result)
+                Text(result.name).searchCompletion(result.name)
             }
         }
     }
     var searchResults: [DeviceData]? {
-        
         if searchText.isEmpty {
             return viewModel.data
             
         } else {
             return viewModel.data?.filter {
-                $0.name.contains(searchText)
+                $0.name.localizedCaseInsensitiveContains(searchText)
             }
         }
     }
